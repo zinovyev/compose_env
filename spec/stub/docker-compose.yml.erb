@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./tmp/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: <%= !development? ? 'strong123password' : 'password' %>
+  web:
+    <% if env.production? || staging? %>
+    image: my_app:v0.1
+    <% else %>
+    build: .
+    <% end %>
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    volumes:
+      - .:/myapp
+    environment:
+      RAILS_ENV: <%= current_env %>
+    ports:
+      <% development do %>
+      - "3000:3000"
+      <% end %>
+      - "80:3000"
+    depends_on:
+      - db

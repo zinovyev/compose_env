@@ -1,0 +1,2 @@
+#! /usr/bin/env ruby
+require File.expand_path('./compose_env.rb', __dir__)
